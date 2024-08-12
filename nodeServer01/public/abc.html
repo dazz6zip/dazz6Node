@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>public/abc.html</title>
+  </head>
+  <body>
+    <h2>🔗 직원 목록</h2>
+    <ul id="emp-list"></ul>
+    <div>get : <button id="get-emps">직원 정보 요청</button></div>
+    <div>
+      post :
+      <input type="text" id="emp-name" placeholder="직원명 입력" required />
+      <button id="add-emp">직원 추가</button>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const empList = document.getElementById("emp-list");
+        const empNameInput = document.getElementById("emp-name");
+        const getEmpButton = document.getElementById("get-emps");
+        const addEmpButton = document.getElementById("add-emp");
+
+        // get 요청으로 직원 정보 읽기
+        getEmpButton.addEventListener("click", () => {
+          fetch("/employees") // 기본값 get이므로 생략
+            .then((res) => {
+              return res.json();
+            })
+            .then((data) => {
+              // 출력 장소 초기화
+              empList.innerHTML = "";
+              data.forEach((emp) => {
+                const li = document.createElement("li");
+                li.textContent = emp.name;
+                empList.appendChild(li);
+              });
+            })
+            .catch((err) => {
+              console.error("ERROR : " + err);
+            });
+        });
+
+        // post 요청으로 직원 정보 읽기
+        addEmpButton.addEventListener("click", () => {
+          const newEmp = { id: Date.now(), name: empNameInput.value };
+
+          fetch("/employees", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json", // json 타입 명시
+            },
+            body: JSON.stringify(newEmp), // js 객체를 json 문자열로 변환 후 전송
+          })
+            .then((response) => response.json())
+            .then((emp) => {
+              const li = document.createElement("li");
+              li.textContent = emp.name;
+              console.log(emp.name);
+              empList.appendChild(li);
+              empNameInput.value = ""; // 입력 필드 초기화
+            })
+            .catch((err) => {
+              console.error("ERROR : " + err);
+            });
+        });
+        // let = stu{name : 'tom', age : 22} 를 stringify 하면
+        // {'name' : 'tom', 'age' : 22} (JSON 형태를 취하고 있는 문자열)
+      });
+    </script>
+  </body>
+</html>
