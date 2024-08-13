@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>public/abc.html</title>
+    <style>
+      body {
+        color: #333333;
+      }
+      input {
+        width: 70px;
+        border: 1px tomato solid;
+        border-radius: 4px;
+        padding: 5px;
+        color: tomato;
+      }
+
+      input:focus {
+        outline: 2px solid tomato;
+      }
+
+      ::placeholder {
+        color: tomato;
+      }
+
+      button {
+        border: none;
+        background-color: greenyellow;
+        color: tomato;
+        border-radius: 12px;
+        padding: 6px;
+        font-weight: bold;
+      }
+
+      hr {
+        background-color: greenyellow;
+        height: 1px;
+        border: none;
+      }
+      li::marker {
+        color: tomato;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h2>🍅 회원 목록 (GET)</h2>
+      <button id="get-emp">회원 읽기</button>
+      <ul id="emp-list"></ul>
+    </div>
+    <hr />
+    <div>
+      <h2>🍅 회원 추가 (POST)</h2>
+      <input type="text" id="new-emp-name" placeholder="name" />
+      <input type="text" id="new-emp-position" placeholder="position" />
+      <button id="add-emp">회원 추가</button>
+    </div>
+    <hr />
+    <div>
+      <h2>🍅 회원 수정 (PUT)</h2>
+      <input type="number" id="update-emp-id" placeholder="id" />
+      <input type="text" id="update-emp-name" placeholder="name" />
+      <input type="text" id="update-emp-position" placeholder="position" />
+      <button id="update-emp">회원 수정</button>
+    </div>
+    <hr />
+    <div>
+      <h2>🍅 회원 삭제 (DELETE)</h2>
+      <input type="number" id="delete-emp-id" placeholder="id" />
+      <button id="delete-emp">회원 삭제</button>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        /* 모든 회원 읽기 결과 출력 */
+        const empList = document.querySelector("#emp-list");
+
+        const getEmpBtn = document.querySelector("#get-emp");
+        const addEmpBtn = document.querySelector("#add-emp");
+        const updateEmpBtn = document.querySelector("#update-emp");
+        const deleteEmpBtn = document.querySelector("#delete-emp");
+
+        // get 요청으로 전체 직원 읽기 요청
+        getEmpBtn.addEventListener("click", () => {
+          fetch("/emp")
+            .then((res) => res.json())
+            .then((data) => {
+              empList.innerHTML = "";
+              data.forEach((e) => {
+                const li = document.createElement("li");
+                li.textContent = `${e.id}번 ${e.name} : ${e.position}`;
+                empList.appendChild(li);
+              });
+            })
+            .catch((err) => {
+              console.log("ERROR : ", err);
+            });
+        });
+
+        // post 요청으로 새 직원 추가
+        addEmpBtn.addEventListener("click", () => {
+          const name = document.querySelector("#new-emp-name").value;
+          const position = document.querySelector("#new-emp-position").value;
+          fetch("/emp", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name, position }),
+          })
+            .then((res) => res.json())
+            .then((e) => {
+              const li = document.createElement("li");
+              li.textContent = `${e.id}번 ${e.name} : ${e.position}`;
+              empList.appendChild(li);
+            })
+            .catch((err) => {
+              console.log("ERROR : ", err);
+            });
+        });
+
+        // put 요청으로 직원 정보 수정
+        updateEmpBtn.addEventListener("click", () => {
+          const id = document.querySelector("#update-emp-id").value;
+          const name = document.querySelector("#update-emp-name").value;
+          const position = document.querySelector("#update-emp-position").value;
+          fetch(`/emp/${id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name, position }),
+          })
+            .then((res) => {
+              if (!res.ok) {
+                throw new Error("UPDATE NETWORK ERROR");
+              }
+              return res.json();
+            })
+            .then((e) => {
+              alert(`${e.name} - ${e.position} UPDATE SUCCESS`);
+            })
+            .catch((err) => {
+              console.log("ERROR : ", err);
+            });
+        });
+
+        // delete 요청으로 직원 삭제
+        deleteEmpBtn.addEventListener("click", () => {
+          const id = document.querySelector("#delete-emp-id").value;
+          fetch(`/emp/${id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((res) => {
+              if (!res.ok) {
+                throw new Error("DELETE NETWORK ERROR");
+              }
+              return res.json();
+            })
+            .then((e) => {
+              alert(`DELETE SUCCESS`);
+            })
+            .catch((err) => {
+              console.log("ERROR : ", err);
+            });
+        });
+      });
+    </script>
+  </body>
+</html>
