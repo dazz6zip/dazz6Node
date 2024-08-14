@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Boston Housing Multiple Regression</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis/dist/tfjs-vis.umd.min.js"></script>
+    <style>
+        #loading-message {
+            display: none; /* 초기에는 숨김 */
+            font-weight: bold;
+            color: #007bff;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h2>보스톤 지역 평균 집값 예측하기 : 다중회귀모델(x:CRIM, RM, LSTAT)</h2>
+    <button id="showButton">분석 결과 차트 보기</button> 예측결과가 나오는데 약간의 시간이 필요~
+
+    <div id="loading-message">선형회귀 모델 생성 중 ...</div> <!-- 모델 생성 중 메시지 -->
+
+    <div id="result-container" style="display: none;">
+        <div id="input-container">
+            <label for="crimInput">범죄율 (CRIM) 입력:</label>
+            <input type="number" id="crimInput" step="0.01" min="0" /><br/>
+            <label for="roomsInput">방 개수 (RM) 입력:</label>
+            <input type="number" id="roomsInput" step="0.1" min="0" /><br/>
+            <label for="lstatInput">저소득층 비율 (LSTAT) 입력:</label>
+            <input type="number" id="lstatInput" step="0.1" min="0" />
+            <button id="predictButton">예측가격 확인</button>
+        </div>
+        <div id="single-prediction-container">
+            <h2>입력한 값에 대한 집 예측 가격:</h2>
+            <p id="singlePrediction"></p>
+        </div>
+        <div id="predictions-container">
+            <h3>입력한 값에 대한 예측 가격:</h3>
+            <ul id="predictions-list"></ul>
+        </div>
+    </div>
+    <script src="bostonscript2.js"></script>
+</body>
+</html>
